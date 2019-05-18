@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.coolweather.db.City;
-import com.example.coolweather.db.Country;
+import com.example.coolweather.db.County;
 import com.example.coolweather.db.Province;
 import com.example.coolweather.util.HttpUtil;
 import com.example.coolweather.util.Utility;
@@ -46,7 +46,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private List<Province> provinceList;
     private List<City>  cityList;
-    private List<Country> countryList;
+    private List<County> countyList;
 
     private Province selectedProvince;
     private City selectedCity;
@@ -140,11 +140,11 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCounties(){
         titleText.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
-        countryList = DataSupport.where("cityid = ?", String.valueOf(selectedCity.getId())).find(Country.class);
-        if(countryList.size() > 0){
+        countyList = DataSupport.where("cityid = ?", String.valueOf(selectedCity.getId())).find(County.class);
+        if(countyList.size() > 0){
             dataList.clear();
-            for (Country city :countryList){
-                dataList.add(city.getConturyName());
+            for (County city :countyList){
+                dataList.add(city.getCountyName());
             }
 
             adapter.notifyDataSetChanged();
