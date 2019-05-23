@@ -3,6 +3,7 @@ package com.example.coolweather.gson;
 import com.google.gson.annotations.SerializedName;
 
 public class Basic {
+
     @SerializedName("city")
     public String cityName;
 
@@ -11,8 +12,11 @@ public class Basic {
 
     public Update update;
 
-    public class Update{
+    public class Update {
+
         @SerializedName("loc")
         public String updateTime;
+
     }
+
 }

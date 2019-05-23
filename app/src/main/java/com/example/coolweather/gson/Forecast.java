@@ -22,10 +22,10 @@ package com.example.coolweather.gson;
          *           {"date":"2019-05-23","cond":{"txt_d":"多云"},"tmp":{"max":"18","min":"7"}},
          *           {"date":"2019-05-24","cond":{"txt_d":"晴"},"tmp":{"max":"16","min":"6"}}],
          * */
-
 import com.google.gson.annotations.SerializedName;
 
 public class Forecast {
+
     public String date;
 
     @SerializedName("tmp")
@@ -34,14 +34,19 @@ public class Forecast {
     @SerializedName("cond")
     public More more;
 
-    public class Temperature{
+    public class Temperature {
+
         public String max;
+
         public String min;
+
     }
 
-    public class More{
+    public class More {
+
         @SerializedName("txt_d")
         public String info;
-    }
-}
 
+    }
+
+}

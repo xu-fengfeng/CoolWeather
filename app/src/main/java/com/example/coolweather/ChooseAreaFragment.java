@@ -33,29 +33,46 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ChooseAreaFragment extends Fragment {
+
     public static final int LEVEL_PROVINCE = 0;
+
     public static final int LEVEL_CITY = 1;
+
     public static final int LEVEL_COUNTY = 2;
+
     private ProgressDialog progressDialog;
 
     private TextView titleText;
+
     private Button backButton;
+
     private ListView listView;
 
     private ArrayAdapter<String> adapter;
+
     private List<String> dataList = new ArrayList<>();
 
     private List<Province> provinceList;
-    private List<City>  cityList;
+
+
+    private List<City> cityList;
+
+
     private List<County> countyList;
 
+
     private Province selectedProvince;
+
+
     private City selectedCity;
+
+
     private int currentLevel;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, 
+							@Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.choose_area, container, false);
         titleText = view.findViewById(R.id.title_text);
         backButton = view.findViewById(R.id.back_button);
@@ -75,12 +92,11 @@ public class ChooseAreaFragment extends Fragment {
                 if(currentLevel == LEVEL_PROVINCE){
                     selectedProvince = provinceList.get(position);
                     queryCities();
-                }
-                else if(currentLevel == LEVEL_CITY){
+                } else if(currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
                 }else if(currentLevel == LEVEL_COUNTY){
-                    String weatherId = countyList.get(position).getWatherId();
+                    String weatherId = countyList.get(position).getWeatherId();
                     Intent intent = new Intent(getActivity(), WeatherActivity.class);
                     intent.putExtra("weather_id", weatherId);
                     startActivity(intent);
@@ -93,8 +109,7 @@ public class ChooseAreaFragment extends Fragment {
             public void onClick(View v) {
                 if(currentLevel == LEVEL_COUNTY){
                     queryCities();
-                }
-                if(currentLevel == LEVEL_CITY){
+                } else if(currentLevel == LEVEL_CITY){
                     queryProvince();
                 }
             }
@@ -173,7 +188,7 @@ public class ChooseAreaFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        closeProgerssDialog();
+                        closeProgressDialog();
                         Toast.makeText(getContext(), "Load Failed..", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -188,14 +203,14 @@ public class ChooseAreaFragment extends Fragment {
                 }else if("city".equals(type)){
                     result = Utility.handleCityResponse(responseText, selectedProvince.getId());
                 }else if("county".equals(type)){
-                    result = Utility.handleCountryResponse(responseText, selectedCity.getId());
+                    result = Utility.handleCountyResponse(responseText, selectedCity.getId());
                 }
 
                 if(result){
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            closeProgerssDialog();
+                            closeProgressDialog();
                             if("province".equals(type)){
                                 queryProvince();
                             }else if ("city".equals(type)){
@@ -221,7 +236,7 @@ public class ChooseAreaFragment extends Fragment {
     }
 
 
-    private void closeProgerssDialog(){
+    private void closeProgressDialog() {
         if(progressDialog != null){
             progressDialog.dismiss();
         }

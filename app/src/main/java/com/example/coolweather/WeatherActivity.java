@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,8 +17,6 @@ import com.example.coolweather.gson.Weather;
 import com.example.coolweather.util.HttpUtil;
 import com.example.coolweather.util.Utility;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -26,6 +25,8 @@ import okhttp3.Response;
 
 
 public class WeatherActivity extends AppCompatActivity {
+    private static final String TAG = "WeatherActivity";
+
     private ScrollView weatherLayout;
     private TextView titleCity;
     private TextView titleUpdateTime;
@@ -73,9 +74,29 @@ public class WeatherActivity extends AppCompatActivity {
 
 
     public void requestWeather(final String weatherId){
-        String weatherUrl = "http://guolin.tech.api/weather?cityid=" +
+        String weatherUrl = "http://guolin.tech/api/weather?cityid=" +
                 weatherId + "&key=dcea40a286864689946cb79b4b548530";
-        HttpUtil.sendOkHttpRequest(weatherId, new Callback() {
+        Log.d(TAG, weatherUrl);
+        HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseText = response.body().string();
+                final Weather weather = Utility.handleWeatherResponse(responseText);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(weather != null && "ok".equals(weather.status)){
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                            editor.putString("weather", responseText);
+                            editor.apply();
+                            showWeatherInfo(weather);
+                        }else{
+                            Toast.makeText(WeatherActivity.this, "get weather info failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -87,25 +108,6 @@ public class WeatherActivity extends AppCompatActivity {
                 });
             }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String responseText = response.body().string();
-                final Weather weather = Utility.handleWeatherResponse(responseText);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(weather != null && "ok".equals(weather.status)){
-                            SharedPreferences.Editor editor = PreferenceManager.
-                                    getDefaultSharedPreferences(WeatherActivity.this).edit();
-                            editor.putString("weather", responseText);
-                            editor.apply();
-                            showWeatherInfo(weather);
-                        }else{
-                            Toast.makeText(WeatherActivity.this, "get weather info failed.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
         });
         return;
     }
@@ -113,7 +115,7 @@ public class WeatherActivity extends AppCompatActivity {
     public void showWeatherInfo(Weather weather){
         String cityName = weather.basic.cityName;
         String updateTime = weather.basic.update.updateTime.split(" ")[1];
-        String degree = weather.now.tempture + "degree";
+        String degree = weather.now.temperature + "degree";
         String weatherInfo = weather.now.more.info;
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
